@@ -1,31 +1,110 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.9.34622.214
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Puzzle DAA", "Puzzle DAA\Puzzle DAA.vcxproj", "{608096D7-DD84-4366-8A9E-40FF1D007F81}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{608096D7-DD84-4366-8A9E-40FF1D007F81}.Debug|x64.ActiveCfg = Debug|x64
-		{608096D7-DD84-4366-8A9E-40FF1D007F81}.Debug|x64.Build.0 = Debug|x64
-		{608096D7-DD84-4366-8A9E-40FF1D007F81}.Debug|x86.ActiveCfg = Debug|Win32
-		{608096D7-DD84-4366-8A9E-40FF1D007F81}.Debug|x86.Build.0 = Debug|Win32
-		{608096D7-DD84-4366-8A9E-40FF1D007F81}.Release|x64.ActiveCfg = Release|x64
-		{608096D7-DD84-4366-8A9E-40FF1D007F81}.Release|x64.Build.0 = Release|x64
-		{608096D7-DD84-4366-8A9E-40FF1D007F81}.Release|x86.ActiveCfg = Release|Win32
-		{608096D7-DD84-4366-8A9E-40FF1D007F81}.Release|x86.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E63E8490-E139-4227-A56A-440C5555C0F0}
-	EndGlobalSection
-EndGlobal
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+// color define codes for use
+#define RESET       "\033[0m"
+#define RED         "\033[31m"
+#define GREEN       "\033[32m"
+#define YELLOW      "\033[33m"
+#define BLUE        "\033[34m"
+#define MAGENTA     "\033[35m"
+#define CYAN        "\033[36m"
+#define BOLD        "\033[1m"
+
+void printHeader() { // print header in start
+    cout << BOLD << CYAN;
+    cout << "                **********************************" << endl;
+    cout << "                *" << BOLD << MAGENTA << "         PUZZLE GAME            " << BOLD << CYAN << "*" << endl;
+    cout << "                **********************************" << endl;
+    cout << RESET;
+    cout << BOLD << BLUE;
+    cout << "Enter a positive integer to see if it can be split into two parts\n"
+        << "with alternating + and - signs that sum to zero." << endl;
+    cout << RESET;
+}
+
+void printFooter() { // print footer at the end
+    cout << BOLD << CYAN;
+    cout << "                **********************************" << endl;
+    cout << "                *" << BOLD << MAGENTA << "       THANK YOU FOR PLAYING!     " << BOLD << CYAN << "*" << endl;
+    cout << "                **********************************" << endl;
+    cout << RESET;
+    cout << BOLD << GREEN;
+    cout << "                 ______________________________" << endl;
+    cout << "                |                              |" << endl;
+    cout << "                |   Hope you enjoyed the game! |" << endl;
+    cout << "                |______________________________|" << endl;
+    cout << RESET;
+}
+
+void puzzle_game() {
+    printHeader();
+
+    int n;
+    while (true) { //infinite while loop
+        cout << YELLOW << "Enter a positive integer (or 0 to exit): " << RESET;
+        //chock if number is valid 
+        if (!(cin >> n) || n < 0) {
+            cout << RED << "Invalid input. Please enter a positive integer." << RESET << endl;
+            cin.clear();
+            while (cin.get() != '\n');
+            continue;
+        }
+        // if user enter 0 end game
+        if (n == 0) {
+            cout << GREEN << "Exiting the game. Thank you for playing!" << RESET << endl;
+            break;
+        }
+
+        int sum = n * (n + 1) / 2; // sum 
+        if (sum % 2 != 0) { // if odd no solution
+            cout << RED << "No solution for n = " << n << RESET << endl;
+        }
+        else {// if even then solve
+            int half_sum = sum / 2; // divide sum in half
+
+            vector<char> set_sign(n + 1, '-'); //Creates a vector set_sign of size n + 1 and initializes all elements to '-'.
+            vector<bool> used(n + 1, false); //Creates a vector used of size n + 1 and initializes all elements to false. This vector tracks whether a number has been included in the subset that sums to half_sum.
+            for (int i = n; i >= 1; --i) { //reverse from n to 1
+                if (half_sum >= i) { //number is less than i 
+                    set_sign[i] = '+'; //assign + sign 
+                    half_sum -= i; // sub it from the half 
+                    used[i] = true; // assign the bool as true for that location or number
+                }
+            }
+
+            cout << GREEN << "The sequence for n = " << n << " is: " << RESET << endl;
+            cout << BOLD << BLUE;
+            cout << string(40, '-') << RESET << endl; // print 40 -
+            //for color changing and printing sequence
+            for (int i = 1; i <= n; ++i) {
+                if (set_sign[i] == '+') {
+                    cout << BLUE;
+                }
+                else {
+                    cout << MAGENTA;
+                }
+                cout << set_sign[i] << i << " ";
+
+            }
+            cout << RESET << endl;
+            cout << GREEN << "Congratulations! The sequence is valid and sums to zero." << RESET << endl;
+        }
+        char choice; // if n exit game
+        cout << YELLOW << "\nDo you want to try another number? (y/n): " << RESET;
+        cin >> choice;
+        if (choice == 'n' || choice == 'N') {
+            cout << GREEN << "Exiting the game. Thank you for playing!" << RESET << endl;
+            break;
+        }
+        cout << BOLD << BLUE << "\n" << string(40, '=') << RESET << endl; // print 40 =
+    }
+
+    printFooter();
+}
+
+int main() {
+    puzzle_game();
+    return 0;
+}
